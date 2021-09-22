@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+    
+    {% block title %}
+        {{odk.naziv}} - {{block.super}}
+    {% endblock title %}
+        
+    {% block breadcrumb %}
+        <li class="breadcrumb-item"><a href="{% url 'mjesta' %}">Mjesta</a></li>
+       <li class="breadcrumb-item active">{{odk.naziv}}</li>
+    {% endblock breadcrumb %}
+                
+    
+    {% block content %}
+    
+    <div class="stats mb-3 px-1 border rounded">
+        <div class="row">
+            <div class="col">
+                <div class="col"><b>Segmenti:</b></div>
+                <div class="col">{{odk.ukupno_segmenata}}</div>
+            </div>
+            <div class="col ms-auto text-end">
+                <div class="col"><b>Riješeno: </b></div>
+                <div class="col">{{odk.od_toga_rijeseno}}</div>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-sm">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{odk.postotak}}% " aria-valuenow="{{odk.postotak}}" aria-valuemin="0" aria-valuemax="100">{{odk.postotak}}%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <table class="table table-responsive table-sm">
+            <thead class="table-dark">
+                <th>Segment</th>
+                <th>Dionica</th>
+                <th>Dužina</th>
+            </thead>
+            <tbody>
+                
+                {% for kabel in odk.kablovi.all %}
+                    
+                    {% if  kabel.status == 'Riješeno'%}
+                        <tr class="alert alert-success">
+                            <td><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></td>
+                            <td>{{kabel.dionica}}</td>
+                            <td>{{kabel.dionica.duzina}}</td>
+                        </tr>
+                    {% elif  kabel.status == 'Zastoj'%}
+                    <tr class="alert alert-warning">
+                        <td><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></td>
+                        <td>{{kabel.dionica}}</td>
+                        <td>{{kabel.dionica.duzina}}</td>
+                    </tr>
+                    {% else %}
+                        <tr class="alert alert-light">
+                            <td><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></td>
+                            <td>{{kabel.dionica}}</td>
+                            <td>{{kabel.dionica.duzina}}</td>
+                        </tr>
+                    {% endif %}
+                        
+                    
+                
+
+                {% endfor %}
+                    
+                
+            </tbody>
+        </table>
+
+    {% endblock content %}
+        

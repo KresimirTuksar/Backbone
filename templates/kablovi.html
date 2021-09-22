@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{odk.naziv}} - {{block.super}}
+{% endblock title %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'mjesta' %}">Gradilišta</a></li>
+<li class="breadcrumb-item"><a href="{% url 'podrucja' dionica.podrucje.mjesto.pk %}">{{dionica.podrucje.mjesto.naziv}}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dionice' dionica.podrucje.mjesto.pk dionica.podrucje.pk %}">{{dionica.podrucje.naziv}}</a></li>
+<li class="breadcrumb-item active">{{dionica.naziv}}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="mb-3">
+        <a href="{% url 'kablovi_novo' dionica.podrucje.mjesto.pk dionica.podrucje.pk dionica.pk%}" class="btn btn-primary">Novi Unos</a>
+    </div>
+
+        <table class="table">
+            <thead class="table-dark">
+                <th>Segment</th>
+                <th>Dionica</th>
+                <th>Dužina</th>
+                <th>Kreirao</th>
+                <th></th>
+            </thead>
+            <tbody>
+                
+                {% for item in dionica.kablovi.all %}
+                    
+                    {% if item.rijeseno == True %}
+                        <tr class="alert alert-success">
+                            <td><a href="{% url 'detalji' item.dionica.podrucje.mjesto.pk item.dionica.podrucje.pk item.dionica.pk item.pk %}">{{item.segment}}</a></td>
+                            <td>{{item.dionica}}</td>
+                            <td>{{item.duzina}}</td>
+                            <td>{{item.kreirao.username}}</td>
+                            <td></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td><a href="{% url 'detalji' item.dionica.podrucje.mjesto.pk item.dionica.podrucje.pk item.dionica.pk item.pk %}">{{item.segment}}</a></td>
+                            <td>{{item.dionica}}</td>
+                            <td>{{item.duzina}}</td>
+                            <td>{{item.kreirao.username}}</td>
+                            <td></td>
+                        </tr> 
+                    {% endif %}
+                    
+                {% endfor %}
+                    
+                
+            </tbody>
+        </table>
+
+    {% endblock content %}
+        

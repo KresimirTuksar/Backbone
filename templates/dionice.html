@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{podrucje.naziv}} - {{block.super}}
+{% endblock title %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'mjesta' %}">Gradilišta</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'podrucja' podrucje.mjesto.pk %}">{{podrucje.mjesto.naziv}}</a></li>
+    
+    <li class="breadcrumb-item active">{{podrucje.naziv}}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+    <!-- offcanvas - lista ODK -->
+    <div class="row mb-3">
+        <div class="col-sm-2">
+            
+            <div class="mb-3 odks">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                        {{podrucje}} - Odk
+                    </button>
+                </div>
+                    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Pregled po ODK</h5>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div>
+                                <table class="table">
+                                    <thead>
+                                        <th>Odk</th>
+                                        <th>Izvođač</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for odk in podrucje.odks.all %}
+                                        
+                                        {% if user.is_superuser %}
+                                        
+                                        <tr>
+                                            <td><a href="{% url 'kablovi_odk' odk.podrucje.mjesto.pk odk.podrucje.pk odk.pk %}">{{odk.naziv}}</a></td>
+                                            <td>{{odk.izvodjac}}</td>
+                                        </tr>
+                                        
+                                        {% elif odk.izvodjac == request.user.zaposlenik.poslodavac %}
+                                        
+                                        <tr>
+                                            <td><a href="{% url 'kablovi_odk' odk.podrucje.mjesto.pk odk.podrucje.pk odk.pk %}">{{odk.naziv}}</a></td>
+                                            <td>{{odk.izvodjac}}</td>
+                                        </tr>
+                                        
+                                        {% endif %}
+                                        
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                
+            </div>
+        </div>
+    <!-- gumbi za kreiranje nove dionice i uvoz kompletnog polja iz excel tablice -->
+        
+        {% if user.is_superuser %}
+            
+            <div class="col-sm-2 ms-auto mb-3">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'upload' podrucje.mjesto.pk podrucje.pk%}" class="btn btn-success btn-block btn-sm">Uvoz</a>
+                </div>
+            </div>
+            <div class="col-sm-2 mb-3">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'dionice_novo' podrucje.mjesto.pk podrucje.pk%}" class="btn btn-primary btn-block btn-sm">Novi Unos</a>
+                
+                </div>
+            </div>
+        {% endif %}
+            
+        
+    </div>
+
+    
+    <!-- Pregeled svih dionica na polju -->
+    
+    
+    <div class="stats mb-3 px-1 border rounded">
+        <div class="row">
+            <div class="col">
+                <div class="col"><b>Segmenti:</b></div>
+                <div class="col">{{podrucje.ukupno_segmenata}}</div>
+            </div>
+            <div class="col ms-auto text-end">
+                <div class="col"><b>Riješeno: </b></div>
+                <div class="col">{{podrucje.od_toga_rijeseno}}</div>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-sm">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{podrucje.postotak}}% " aria-valuenow="{{podrucje.postotak}}" aria-valuemin="0" aria-valuemax="100">{{podrucje.postotak}}%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    {% for dionica in podrucje.dionice.all %}
+    
+    <div class="card mb-3">
+            <div class="card-header p-1">
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">RB:</div>
+                            <div class="col">{{dionica.rb}}</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">Šupljina:</div>
+                            <div class="col"><a href="{% url 'kablovi' dionica.podrucje.mjesto.pk dionica.podrucje.pk dionica.pk %}">{{dionica.naziv}}</a></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">Dužina(m):</div>
+                            <div class="col">{{dionica.duzina}}</div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-sm 3"><b>{{dionica.rb}}</b></div>
+                        <div class="col-sm 3"><a href="{% url 'kablovi' dionica.podrucje.mjesto.pk dionica.podrucje.pk dionica.pk %}">{{dionica.naziv}}</a></div>
+                    <div class="col-sm 3"{{dionica.duzina}}></div>
+                    <div class="col-sm 3"></div> -->
+                </div> 
+                
+            </div>
+            <div class="card-body p-1">
+                {% for kabel in dionica.kablovi.all %}
+                
+                {% if kabel.status == 'Riješeno' %}
+                <div class="row alert alert-success m-0 p-1">
+                    <div class="col-sm"><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></div>
+                    <div class="col-sm">{{ kabel.status }}</div>
+                    <div class="col-sm"></div>
+                    <div class="col-sm"></div>
+                </div>
+                {% elif kabel.status == 'Zastoj'%}    
+                <div class="row alert alert-warning m-0 p-1">
+                    <div class="col-sm"><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></div>
+                    <div class="col-sm">{{kabel.status}}</div>
+                    <div class="col-sm"></div>
+                    <div class="col-sm"></div>
+                </div>
+                {% else %}
+                <div class="row alert alert-secondary m-0 p-1">
+                    <div class="col-sm"><a class="alert-link" href="{% url 'detalji' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk %}">{{kabel.segment}}</a></div>
+                    <div class="col-sm">{{kabel.status}}</div>
+                    <div class="col-sm"></div>
+                    <div class="col-sm"></div>
+                </div>
+                {% endif %}
+                
+                
+                
+                {% endfor %}
+            </div>
+            
+        </div>
+            {% endfor %}
+
+{% endblock content %}
+        

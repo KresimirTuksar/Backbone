@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+    
+    {% block breadcrumb %}
+        <li class="breadcrumb-item active">Gradilišta</li>
+    {% endblock breadcrumb %}
+               
+{% block content %}
+    
+    {% if user.is_superuser %}
+        <div class="mb-3">
+            <a href="{% url 'mjesto_novo'%}" class="btn btn-primary">Novi Unos</a>
+        </div>
+    {% endif %}
+        
+        <table class="table table-sm">
+            <thead class="table-dark">
+                <th>Mjesto</th>
+                <th>Polja</th>
+            </thead>
+            <tbody>
+                {% for item in mjesto %}
+                    <tr>
+                        <td> 
+                            <a href="{% url 'podrucja' item.pk %}">{{ item.naziv }}</a>
+                        </td>
+                        <td>{{item.podrucja.count}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% endblock content %}
+
+
+  </body>
+</html>

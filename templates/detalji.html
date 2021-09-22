@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% load has_group %}
+
+{% block title %}
+    {{kabel.segment}} - {{block.super}}
+{% endblock title %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'mjesta' %}">Gradilišta</a></li>
+<li class="breadcrumb-item"><a href="{% url 'podrucja' kabel.dionica.podrucje.mjesto.pk %}">{{kabel.dionica.podrucje.mjesto.naziv}}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dionice' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk %}">{{kabel.dionica.podrucje.naziv}}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'kablovi' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk%}">{{kabel.dionica.naziv}}</a></li>
+<li class="breadcrumb-item active">{{kabel.segment}}</li>
+{% endblock breadcrumb %}
+
+
+{% block content %}
+<div class="row h-50">
+    <div class="col-lg-6 h-50">
+        <div class="card mb-2  overflow-auto">
+            <div class="card-header alert-info">
+                <div class="row">
+                    <div class="col"><b class="fs-5">Detalji</b></div>
+                    <div class="col"></div>
+                    {% if user|has_group:"izgradnja" %} 
+                        {% if kabel.status == 'Riješeno' %}
+                            <div class="col">
+                                <div class="d-grid gap-1">
+                                    <a href="{% url 'odradi' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk%}" class="btn btn-success btn-sm disabled">Odradi</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col">
+                                <div class="d-grid gap-1">
+                                    <a href="{% url 'odradi' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk%}?next={{ request.path|urlencode }}" class="btn btn-success btn-sm">Odradi</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                        
+                    
+                    {% if user.is_superuser %}
+                        <div class="col">
+                            <div class="d-grid gap-1">
+
+                                <a href="{% url 'kabel_uredi' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk%}?next={{ request.path|urlencode }}" class="btn btn-warning btn-sm">Uredi</a>
+                            </div>
+                        </div>
+                    {% else %}
+                    <div class="col"></div>
+                    {% endif %}
+                        
+                </div>
+            </div>
+            <div class="card-body py-2">
+                <div class="row pb-1 border border-success border-1 rounded">
+                    <div class="col-sm py-0"><b class="fs-7">Status</b></div>
+                    <div class="col-sm py-0"><b class=" fs-7 m-0">{{kabel.status}}</b></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Segment</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.segment}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Odk</b></div>
+                    <div class="col-sm py-0"><a class=" fs-7 m-0" href="{% url 'kablovi_odk' kabel.odk.podrucje.mjesto.pk kabel.odk.podrucje.pk kabel.odk.pk %}">{{kabel.odk}}</a></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Dužina</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.dionica.duzina}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Početna stacionaža</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.pocetna}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Završna stacionaža</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.zavrsna}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Radna dužina</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.radna_duzina}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Broj niti</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.broj_niti}}</p></div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-sm py-0"><b class="fs-7">Napomena</b></div>
+                    <div class="col-sm py-0"><p class=" fs-7 m-0">{{kabel.napomena}}</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 h-50">
+        <div class="card mb-2 h-50 overflow-auto">
+            <div class="card-header">
+                
+                <div class="row justify-content-end">
+                    <div class="col">
+                        <b class="fs-5">Bilješke</b>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col ">
+                        <div class="d-grid gap-2">
+
+                            <a href="{% url 'biljeska_novo' kabel.dionica.podrucje.mjesto.pk kabel.dionica.podrucje.pk kabel.dionica.pk kabel.pk%}" class="btn btn-primary btn-sm btn-block">Novi Unos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-50 overflow-auto card-body">
+                {% for item  in kabel.biljeske.all %}
+                <div class="border px-3 my-2">
+                    <div class="row pb-2">
+                        <div class="col-sm py-0 ">
+                            <small >{{item.kreirao.get_full_name}}</small>
+                        </div>
+                        <div class="col-sm text-right py-0">
+                            <small class="text-right text-muted">{{item.kreirano}}</small>
+                        </div>
+                    </div>
+                    <div class="row py-0">
+                        <div class="col-sm py-1"><p class="fs-7 px-3">{{item.sadrzaj}}</p></div>
+                    </div>
+
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+{% endblock content %}
+    

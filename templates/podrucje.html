@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+    
+    {% block title %}
+        {{podrucje.naziv}} - {{block.super}}
+    {% endblock title %}
+        
+    {% block breadcrumb %}
+        <li class="breadcrumb-item"><a href="{% url 'mjesta' %}">Gradilišta</a></li>
+        <li class="breadcrumb-item active">{{mjesto.naziv}}</li>
+    {% endblock breadcrumb %}
+                
+    
+    {% block content %}
+    
+    {% if user.is_superuser %}
+        <div class="mb-3">
+            <a href="{% url 'podrucje_novo' mjesto.pk%}" class="btn btn-primary">Novi Unos</a>
+        </div>
+    {% endif %}
+        
+
+    <div class="table-responsive">
+
+        <table class="table table-sm">
+            <thead class="table-dark text-center">
+                <th class="text-start">Polje</th>
+                <th class="text-start">DČ</th>
+                <th >ODK</th>
+                <th>Dionice</th>
+                <th>Ukupno(m)</th>
+                
+            </thead>
+            <tbody>
+                
+                {% for item in mjesto.podrucja.all %}
+                    <tr class="text-center">
+                        <td class="text-start"><a href="{% url 'dionice' item.mjesto.pk item.pk %}">{{ item.naziv }}</a></td>
+                        <td class="text-start">{{item.dc}}</td>
+                        <td>{{item.odks.count}}</td>
+                        <td>{{item.dionice.count}}</td>
+                        <td>{{item.ukupno_metara.duzina__sum}}</td>
+
+                    </tr> 
+                {% endfor %}
+                    
+                
+            </tbody>
+        </table>
+    </div>
+
+    {% endblock content %}
+        
